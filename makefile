@@ -6,7 +6,7 @@ clean :
 run : main
 	./main
 
-main : main.o Node.o Network.o
+main : main.o Network.o
 	g++ --std=c++2a $^ -o $@
 
 %.o : %.cpp

@@ -6,7 +6,7 @@
 
 namespace rbn
 {
-Network::Network(const std::vector< Node > &nodes,cont std::vector<std::vector<size_t>&connections, const std::vector< bool > &lookup)
+Network::Network(const std::vector< bool > &nodes,const std::vector<std::vector<size_t>>&connections, const std::vector< bool > &lookup)
 	: nodes_(nodes),connections_(connections),lookup_(lookup){}
 
 Network::Network(const Network & n)
@@ -36,7 +36,7 @@ Network::Network( const size_t numberNodes , const size_t connectionsPerNode , c
 		//randomly select other nodes to connect
 		std::vector< size_t > selected ;
 		{
-			const auto range = boost::irange(0, nodes_.size());
+			const auto range = boost::irange(size_t(0), nodes_.size());
 			std::vector< size_t > indices(boost::begin(range),boost::end(range));
 			const auto end = std::stable_partition(indices.begin(),indices.end(),[=](const size_t x){ return x != it;});
 			selected.reserve( connectionsPerNode );
@@ -50,6 +50,11 @@ Network::Network( const size_t numberNodes , const size_t connectionsPerNode , c
 const std::vector< bool > & Network::nodes() const
 {
 	return nodes_ ;
+}
+
+const std::vector<std::vector<size_t>> &Network::connections() const
+{
+	return connections_;
 }
 
 const std::vector<bool> & Network::lookUp() const
@@ -74,18 +79,18 @@ static unsigned int toNum(const std::vector<bool> &state)
 
 static bool newValueAt( const size_t index , const Network & old )
 {
-	const std::vector<size_t> & connections = old.connections()[it];
+	const std::vector<size_t> & connections = old.connections()[index];
 	std::vector<bool> connectionValues ;
 	std::transform( connections.begin() , connections.end() ,std::back_inserter(connectionValues),[&](const size_t it){return old.nodes()[it];});
-	const unsigned int value = toNum(connectionValues);
+	const unsigned int value = utility::toNum(connectionValues);
 	return old.lookUp()[value] ;
 }
 
 Network update( const Network & old )
 {
 	std::vector<bool> nodes;
-	nodes.reserve(old);
-	const auto range = boost::irange(0,old.nodes().size());
+	nodes.reserve(old.nodes().size());
+	const auto range = boost::irange(size_t(0),old.nodes().size());
 	std::transform(boost::begin(range),boost::end(range),std::back_inserter(nodes),[&](const size_t i){return newValueAt(i,old);});
 
 	return Network(nodes,old.connections(),old.lookUp());
@@ -95,7 +100,7 @@ std::string show(const Network & network,const char trueChar,const char falseCha
 {
 	std::stringstream ss ;
 	ss << '|';
-	for( const rbn::Node & node : network.nodes() )
+	for( const bool node : network.nodes() )
 	{
 			ss << (node?trueChar:falseChar);
 	}

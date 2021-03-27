@@ -17,7 +17,7 @@ public:
 	Network(const std::vector< bool > & nodes,const std::vector<std::vector<size_t>> & connections, const std::vector< bool > &lookup);
 	Network( const size_t numberNodes , const size_t connectionsPerNode , const int seed );
 	Network(const Network &);
-	const std::vector< Node > & nodes() const ;
+	const std::vector< bool > & nodes() const ;
 	const std::vector<std::vector<size_t>> & connections() const;
 	const std::vector< bool > & lookUp() const ;
 };
